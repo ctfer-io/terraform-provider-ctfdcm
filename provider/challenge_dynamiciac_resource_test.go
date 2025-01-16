@@ -38,7 +38,7 @@ resource "ctfdcm_challenge_dynamiciac" "http" {
 
 resource "ctfd_file" "scenario" {
   name         = "scenario.zip"
-  contentb64   = filebase64("some zip content")
+  contentb64   = filebase64("scenario.zip")
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -84,7 +84,7 @@ resource "ctfdcm_challenge_dynamiciac" "http" {
 
 resource "ctfd_file" "scenario" {
   name         = "scenario.zip"
-  contentb64   = filebase64("some zip content")
+  contentb64   = filebase64("scenario.zip")
 }
 `,
 			},
