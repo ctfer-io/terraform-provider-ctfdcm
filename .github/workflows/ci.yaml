@@ -1,0 +1,99 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      ctfd:
+        image: ctferio/ctfd:3.7.5-0.2.1@sha256:03b511e09fd7c567bdd91c94f36520b1757b97a0868096300399537cf8d9763b
+        ports:
+          - 8000:8000
+        env:
+          PLUGIN_SETTINGS_CM_API_URL: http://chall-manager:8080/api/v1
+          PLUGIN_SETTINGS_CM_MANA_TOTAL: 10
+
+      chall-manager: 
+        image: ctferio/chall-manager:v0.2.0@sha256:088b8871a55dff8d215ab024c3e1dbfb4dcecd90432abb49fdf1a3c6a6bf8532
+        ports:
+          - 8080:8080
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: go.mod
+
+      - name: Cache go modules
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Wait for CTFd server
+        run: |
+          max_attempts=60
+          base_url="http://localhost:8000"
+          for ((i=0; i<$max_attempts; i++)); do
+            if curl --head --fail --silent --show-error "$base_url" >/dev/null; then
+              echo "Server is up and running!"
+              break
+            else
+              echo "Waiting for the server to respond... (attempt $((i+1)))"
+              sleep 5
+            fi
+          done
+          if [ $i -eq $max_attempts ]; then
+            echo "Server did not respond within the allotted time. Exiting..."
+            exit 1
+          fi
+      
+      - name: Setup CTFd
+        uses: ctfer-io/ctfd-setup@b3930c4639c6d49b59df251466e5fe6d6a7d75d5 # v1.4.4
+        with:
+          url: 'http://ctfd:8000'
+          appearance_name: TFP-CTFd
+          appearance_description: Terraform Provider CTFd.
+          mode: teams
+          admin_name: ${{ env.NAME }}
+          admin_email: ctfer-io@protonmail.com
+          admin_password: ${{ env.PASSWORD }}
+
+      - name: Generate token
+        run: go run cmd/token/main.go
+        env:
+          CTFD_URL: http://localhost:8000
+          CTFD_NAME: ${{ env.NAME }}
+          CTFD_PASSWORD: ${{ env.PASSWORD }}
+
+      - name: Run go acceptance tests
+        run: make test-acc
+        env:
+          CTFD_URL: http://localhost:8000
+      
+      - name: Upload coverage to Coveralls
+        uses: shogo82148/actions-goveralls@785c9d68212c91196d3994652647f8721918ba11 # v1.9.0
+        with:
+          path-to-profile: cov.out
+
+  go-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: go.mod
+      
+      - name: go-lint
+        uses: golangci/golangci-lint-action@971e284b6050e8a5849b72094c50ab08da042db8 # v6.1.1
