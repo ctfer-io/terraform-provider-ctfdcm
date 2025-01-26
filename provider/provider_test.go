@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 
-	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/provider"
+	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
 	"github.com/ctfer-io/terraform-provider-ctfdcm/provider"
 )
 

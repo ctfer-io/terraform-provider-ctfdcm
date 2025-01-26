@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -131,6 +132,8 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 
 	// Save computed attributes in state
 	data.ID = types.StringValue(strconv.Itoa(res.ID))
+	data.Timeout = utils.ToTFInt64(res.Timeout)
+	data.Until = types.StringPointerValue(res.Until)
 
 	// Create tags
 	challTags := make([]types.String, 0, len(data.Tags))
@@ -216,7 +219,7 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 			Prerequisites: preqs,
 		}
 	}
-	_, err := ctfdcm.PatchChallenges(r.client, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
+	res, err := ctfdcm.PatchChallenges(r.client, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
 		Category:       data.Category.ValueString(),
@@ -246,6 +249,8 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 		)
 		return
 	}
+	data.Timeout = utils.ToTFInt64(res.Timeout)
+	data.Until = types.StringPointerValue(res.Until)
 
 	// Update its tags (drop them all, create new ones)
 	challTags, err := r.client.GetChallengeTags(utils.Atoi(data.ID.ValueString()), ctfd.WithContext(ctx))
@@ -450,6 +455,8 @@ var (
 		"mana_cost": schema.Int64Attribute{
 			MarkdownDescription: "The cost (in mana) of the challenge once an instance is deployed.",
 			Optional:            true,
+			Computed:            true,
+			Default:             defaults.Int64(int64default.StaticInt64(0)),
 		},
 		"scenario_id": schema.StringAttribute{
 			MarkdownDescription: "The file's ID of the scenario.",
@@ -458,10 +465,14 @@ var (
 		"timeout": schema.Int64Attribute{
 			MarkdownDescription: "The timeout (in seconds) after which the instance will be janitored.",
 			Optional:            true,
+			Computed:            true,
+			Default:             nil,
 		},
 		"until": schema.StringAttribute{
 			MarkdownDescription: "The date until the instance could run before being janitored.",
 			Optional:            true,
+			Computed:            true,
+			Default:             nil,
 		},
 	})
 )
