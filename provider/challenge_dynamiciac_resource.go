@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -450,6 +451,8 @@ var (
 		"mana_cost": schema.Int64Attribute{
 			MarkdownDescription: "The cost (in mana) of the challenge once an instance is deployed.",
 			Optional:            true,
+			Computed:            true,
+			Default:             defaults.Int64(int64default.StaticInt64(0)),
 		},
 		"scenario_id": schema.StringAttribute{
 			MarkdownDescription: "The file's ID of the scenario.",
