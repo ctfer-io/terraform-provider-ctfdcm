@@ -12,14 +12,10 @@
     <a href="https://securityscorecards.dev/viewer/?uri=github.com/ctfer-io/terraform-provider-ctfdcm"><img src="https://img.shields.io/ossf-scorecard/github.com/ctfer-io/terraform-provider-ctfdcm?label=openssf%20scorecard&style=for-the-badge" alt="OpenSSF Scoreboard"></a>
 </div>
 
-## Why creating this ?
+## Why this ?
 
-Terraform is used to manage resources that have lifecycles, configurations, to sum it up.
-
-That is the case of CTFd: it handles challenges that could be created, modified and deleted.
-With some work to leverage the unsteady CTFd's API, Terraform is now able to manage them as cloud resources bringing you to opportunity of **CTF as Code**.
-
-With a paradigm-shifting vision of setting up CTFs, the Terraform Provider for CTFd avoid shitty scripts, `ctfcli` and other tools that does not solve the problem of reproductibility, ease of deployment and resiliency.
+To manipulate our [Terraform Provider for CTFd](https://github.com/ctfer-io/terraform-provider-ctfd) along with the [Chall-Manager plugin](https://github.com/ctfer-io/ctfd-chall-manager).
+This enable reusing the configuration thus integrate seamlessly.
 
 ## How to use it ?
 
@@ -42,7 +38,7 @@ We recommend setting the environment variable `CTFD_API_KEY` to enable the provi
 
 Then, you could use a `ctfdcm_challenge` resource to setup your CTFd challenge, with for instance the following configuration.
 ```hcl
-resource "ctfd_challenge" "my_challenge" {
+resource "ctfdcm_challenge_dynamiciac" "my_challenge" {
     name        = "My Challenge"
     category    = "Some category"
     description = <<-EOT
@@ -52,5 +48,16 @@ resource "ctfd_challenge" "my_challenge" {
     EOT
     state       = "visible"
     value       = 500
+
+    shared          = true
+    destroy_on_flag = true
+    mana_cost       = 1
+    scenario_id     = ctfd_file.scenario.id
+    timeout         = 600
+}
+
+resource "ctfd_file" "scenario" {
+    name       = "scenario.zip"
+    contentb64 = filebase64(".../scenario.zip")
 }
 ```

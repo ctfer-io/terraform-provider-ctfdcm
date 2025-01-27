@@ -24,7 +24,7 @@ resource "ctfdcm_challenge_dynamiciac" "http" {
 }
 
 resource "ctfd_flag" "http_flag" {
-  challenge_id = ctfd_challenge_dynamic.http.id
+  challenge_id = ctfdcm_challenge_dynamiciac.http.id
   content      = "CTF{some_flag}"
 }
 
