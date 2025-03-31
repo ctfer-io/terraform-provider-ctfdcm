@@ -46,8 +46,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Opening $GITHUB_ENV file (%s): %s", ghf, err)
 	}
-	defer f.Close()
-	if _, err := f.WriteString(fmt.Sprintf("CTFD_API_KEY=%s\n", *token.Value)); err != nil {
+	defer func() {
+		_ = f.Close()
+	}()
+	if _, err := fmt.Fprintf(f, "CTFD_API_KEY=%s\n", *token.Value); err != nil {
 		log.Fatalf("Writing CTFD_API_KEY to $GITHUB_ENV file (%s): %s", ghf, err)
 	}
 }

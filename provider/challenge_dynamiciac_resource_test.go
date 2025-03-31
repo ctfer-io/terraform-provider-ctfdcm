@@ -153,7 +153,9 @@ func scenario() string {
 	if err != nil {
 		panic(err)
 	}
-	defer fs.Close()
+	defer func() {
+		_ = fs.Close()
+	}()
 
 	fst, err := fs.Stat()
 	if err != nil {
