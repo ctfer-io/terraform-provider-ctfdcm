@@ -29,8 +29,8 @@ github.com/bufbuild/protocompile v0.4.0 h1:LbFKd2XowZvQ/kajzguUp2DC9UEIQhIq77fZZ
 github.com/bufbuild/protocompile v0.4.0/go.mod h1:3v93+mbWn/v3xzN+31nwkJfrEpAUwp+BagBSZWx+TP8=
 github.com/cloudflare/circl v1.3.7 h1:qlCDlTPz2n9fu58M0Nh1J/JzcFpfgkFHHX3O35r5vcU=
 github.com/cloudflare/circl v1.3.7/go.mod h1:sRTcRWXGLrKw6yIGJ+l7amYJFfAXbZG0kBSc8r4zxgA=
-github.com/ctfer-io/go-ctfd v0.10.3-0.20250113095029-e185bdb07ccd h1:EtQ2ULRHwnip1CK8GHpoqmebYLGy+DTMhUvMXt9bRW8=
-github.com/ctfer-io/go-ctfd v0.10.3-0.20250113095029-e185bdb07ccd/go.mod h1:ebgSW8LdP/qtRCpglK4djBp+g6kU5YM98XBZKowiCeY=
+github.com/ctfer-io/go-ctfd v0.11.0 h1:4Rdya1kgT5clYuoLmIeRBplTVLJoLUVGcp7DE4GfwoE=
+github.com/ctfer-io/go-ctfd v0.11.0/go.mod h1:ebgSW8LdP/qtRCpglK4djBp+g6kU5YM98XBZKowiCeY=
 github.com/ctfer-io/go-ctfdcm v0.1.0 h1:eX2YyVASpM9Y2VVFn/iiC4zuBrHi947Zl05W+y6P4YI=
 github.com/ctfer-io/go-ctfdcm v0.1.0/go.mod h1:gYB7uXrZmOtM2GYsuXccdB1Et0oX41V/BwI+2De1Ss0=
 github.com/ctfer-io/terraform-provider-ctfd/v2 v2.2.2 h1:tN+mm48J5wz5MiMZ9i4x8SkFNfzQcCvKqKL7D1oklO4=
