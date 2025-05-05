@@ -3,7 +3,7 @@ module github.com/ctfer-io/terraform-provider-ctfdcm
 go 1.23.4
 
 require (
-	github.com/ctfer-io/go-ctfd v0.12.0
+	github.com/ctfer-io/go-ctfd v0.13.3
 	github.com/ctfer-io/go-ctfdcm v0.1.0
 	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.3.0
 	github.com/hashicorp/terraform-plugin-docs v0.21.0
