@@ -94,6 +94,12 @@ resource "ctfdcm_challenge_dynamiciac" "http" {
     mana_cost       = 1
     scenario_id     = ctfd_file.scenario.id
     timeout         = 600
+	additional      = {
+	    key = "value"
+	}
+
+	min = 2
+	max = 4
 
 	topics = [
 		"Network"

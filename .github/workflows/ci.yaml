@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       ctfd:
-        image: ctferio/ctfd:3.7.5-0.2.1@sha256:03b511e09fd7c567bdd91c94f36520b1757b97a0868096300399537cf8d9763b
+        image: ctferio/ctfd:3.7.7-0.3.0@sha256:c6b9d8ab4c7c674441e2c49170f3cbff1e9df3cda22cf856ad7f9a8c6193ebe3
         ports:
           - 8000:8000
         env:
@@ -22,7 +22,7 @@ jobs:
           PLUGIN_SETTINGS_CM_MANA_TOTAL: 10
 
       chall-manager: 
-        image: ctferio/chall-manager:v0.2.0@sha256:088b8871a55dff8d215ab024c3e1dbfb4dcecd90432abb49fdf1a3c6a6bf8532
+        image: ctferio/chall-manager:v0.4.2@sha256:fad0ed724caa5aff5e877be0ff5fec454aacefa582c01f2728cec1f0ce6b3272
         ports:
           - 8080:8080
     env:
