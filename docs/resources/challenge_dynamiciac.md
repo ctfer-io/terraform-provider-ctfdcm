@@ -4,14 +4,14 @@ page_title: "ctfdcm_challenge_dynamiciac Resource - terraform-provider-ctfdcm"
 subcategory: ""
 description: |-
   CTFd is built around the Challenge resource, which contains all the attributes to define a part of the Capture The Flag event.
-  This implementation has support of a more dynamic behavior for its scoring through time/solves thus is different from a standard challenge.
+  This implementation has support of On Demand infrastructures through Chall-Manager https://github.com/ctfer-io/chall-manager.
 ---
 
 # ctfdcm_challenge_dynamiciac (Resource)
 
 CTFd is built around the Challenge resource, which contains all the attributes to define a part of the Capture The Flag event.
 
-This implementation has support of a more dynamic behavior for its scoring through time/solves thus is different from a standard challenge.
+This implementation has support of On Demand infrastructures through [Chall-Manager](https://github.com/ctfer-io/chall-manager).
 
 ## Example Usage
 
@@ -67,12 +67,15 @@ resource "ctfd_file" "scenario" {
 
 ### Optional
 
+- `additional` (Map of String) An optional key=value map (both strings) to pass to the scenario.
 - `attribution` (String) Attribution to the creator(s) of the challenge.
 - `connection_info` (String) Connection Information to connect to the challenge instance, useful for pwn, web and infrastructure pentests.
 - `destroy_on_flag` (Boolean) Whether to destroy the instance once flagged.
 - `function` (String) Decay function to define how the challenge value evolve through solves, either linear or logarithmic.
 - `mana_cost` (Number) The cost (in mana) of the challenge once an instance is deployed.
+- `max` (Number) The number of instances after which not to pool anymore.
 - `max_attempts` (Number) Maximum amount of attempts before being unable to flag the challenge.
+- `min` (Number) The minimum number of instances to set in the pool.
 - `next` (Number) Suggestion for the end-user as next challenge to work on.
 - `requirements` (Attributes) List of required challenges that needs to get flagged before this one being accessible. Useful for skill-trees-like strategy CTF. (see [below for nested schema](#nestedatt--requirements))
 - `shared` (Boolean) Whether the instance will be shared between all players.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -12,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapdefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -45,6 +47,9 @@ type ChallengeDynamicIaCResourceModel struct {
 	ScenarioID    types.String `tfsdk:"scenario_id"`
 	Timeout       types.Int64  `tfsdk:"timeout"`
 	Until         types.String `tfsdk:"until"`
+	Additional    types.Map    `tfsdk:"additional"`
+	Min           types.Int64  `tfsdk:"min"`
+	Max           types.Int64  `tfsdk:"max"`
 }
 
 func (r *challengeDynamicIaCResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -53,7 +58,7 @@ func (r *challengeDynamicIaCResource) Metadata(ctx context.Context, req resource
 
 func (r *challengeDynamicIaCResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "CTFd is built around the Challenge resource, which contains all the attributes to define a part of the Capture The Flag event.\n\nThis implementation has support of a more dynamic behavior for its scoring through time/solves thus is different from a standard challenge.",
+		MarkdownDescription: "CTFd is built around the Challenge resource, which contains all the attributes to define a part of the Capture The Flag event.\n\nThis implementation has support of On Demand infrastructures through [Chall-Manager](https://github.com/ctfer-io/chall-manager).",
 		Attributes:          ChallengeDynamicIaCResourceAttributes,
 	}
 }
@@ -96,6 +101,10 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 			Prerequisites: preqs,
 		}
 	}
+	add := map[string]string{}
+	for k, tv := range data.Additional.Elements() {
+		add[k] = tv.(types.String).ValueString()
+	}
 	res, err := ctfdcm.PostChallenges(r.client, &ctfdcm.PostChallengesParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
@@ -119,6 +128,9 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 		ScenarioID:    utils.Atoi(data.ScenarioID.ValueString()),
 		Timeout:       utils.ToInt(data.Timeout),
 		Until:         data.Until.ValueStringPointer(),
+		Additional:    add,
+		Min:           int(data.Min.ValueInt64()),
+		Max:           int(data.Max.ValueInt64()),
 	}, ctfd.WithContext(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -219,6 +231,10 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 			Prerequisites: preqs,
 		}
 	}
+	add := map[string]string{}
+	for k, tv := range data.Additional.Elements() {
+		add[k] = tv.(types.String).ValueString()
+	}
 	res, err := ctfdcm.PatchChallenges(r.client, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
@@ -241,6 +257,9 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 		ScenarioID:    utils.Atoi(data.ScenarioID.ValueString()),
 		Timeout:       utils.ToInt(data.Timeout),
 		Until:         data.Until.ValueStringPointer(),
+		Additional:    add,
+		Min:           int(data.Min.ValueInt64()),
+		Max:           int(data.Max.ValueInt64()),
 	}, ctfd.WithContext(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -383,6 +402,15 @@ func (chall *ChallengeDynamicIaCResourceModel) Read(ctx context.Context, client 
 	chall.ScenarioID = types.StringValue(strconv.Itoa(res.ScenarioID))
 	chall.Timeout = utils.ToTFInt64(res.Timeout)
 	chall.Until = types.StringPointerValue(res.Until)
+	addMp := map[string]attr.Value{}
+	for k, v := range res.Additional {
+		addMp[k] = types.StringValue(v)
+	}
+	add, d := types.MapValue(types.StringType, addMp)
+	diags.Append(d...)
+	chall.Additional = add
+	chall.Min = types.Int64Value(int64(res.Min))
+	chall.Max = types.Int64Value(int64(res.Max))
 
 	id := utils.Atoi(chall.ID.ValueString())
 
@@ -473,6 +501,25 @@ var (
 			Optional:            true,
 			Computed:            true,
 			Default:             nil,
+		},
+		"additional": schema.MapAttribute{
+			MarkdownDescription: "An optional key=value map (both strings) to pass to the scenario.",
+			ElementType:         types.StringType,
+			Optional:            true,
+			Computed:            true,
+			Default:             defaults.Map(mapdefault.StaticValue(basetypes.NewMapValueMust(types.StringType, map[string]attr.Value{}))),
+		},
+		"min": schema.Int64Attribute{
+			MarkdownDescription: "The minimum number of instances to set in the pool.",
+			Optional:            true,
+			Computed:            true,
+			Default:             defaults.Int64(int64default.StaticInt64(0)),
+		},
+		"max": schema.Int64Attribute{
+			MarkdownDescription: "The number of instances after which not to pool anymore.",
+			Optional:            true,
+			Computed:            true,
+			Default:             defaults.Int64(int64default.StaticInt64(0)),
 		},
 	})
 )
