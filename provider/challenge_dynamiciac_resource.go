@@ -44,7 +44,7 @@ type ChallengeDynamicIaCResourceModel struct {
 	Shared        types.Bool   `tfsdk:"shared"`
 	DestroyOnFlag types.Bool   `tfsdk:"destroy_on_flag"`
 	ManaCost      types.Int64  `tfsdk:"mana_cost"`
-	ScenarioID    types.String `tfsdk:"scenario_id"`
+	Scenario      types.String `tfsdk:"scenario"`
 	Timeout       types.Int64  `tfsdk:"timeout"`
 	Until         types.String `tfsdk:"until"`
 	Additional    types.Map    `tfsdk:"additional"`
@@ -125,7 +125,7 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 		DestroyOnFlag: data.DestroyOnFlag.ValueBool(),
 		Shared:        data.Shared.ValueBool(),
 		ManaCost:      int(data.ManaCost.ValueInt64()),
-		ScenarioID:    utils.Atoi(data.ScenarioID.ValueString()),
+		Scenario:      data.Scenario.ValueString(),
 		Timeout:       utils.ToInt(data.Timeout),
 		Until:         data.Until.ValueStringPointer(),
 		Additional:    add,
@@ -254,7 +254,7 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 		DestroyOnFlag: data.DestroyOnFlag.ValueBool(),
 		Shared:        data.Shared.ValueBool(),
 		ManaCost:      int(data.ManaCost.ValueInt64()),
-		ScenarioID:    utils.Atoi(data.ScenarioID.ValueString()),
+		Scenario:      data.Scenario.ValueString(),
 		Timeout:       utils.ToInt(data.Timeout),
 		Until:         data.Until.ValueStringPointer(),
 		Additional:    add,
@@ -399,7 +399,7 @@ func (chall *ChallengeDynamicIaCResourceModel) Read(ctx context.Context, client 
 	chall.DestroyOnFlag = types.BoolValue(res.DestroyOnFlag)
 	chall.Shared = types.BoolValue(res.Shared)
 	chall.ManaCost = types.Int64Value(int64(res.ManaCost))
-	chall.ScenarioID = types.StringValue(strconv.Itoa(res.ScenarioID))
+	chall.Scenario = types.StringValue(res.Scenario)
 	chall.Timeout = utils.ToTFInt64(res.Timeout)
 	chall.Until = types.StringPointerValue(res.Until)
 	addMp := map[string]attr.Value{}
@@ -486,8 +486,8 @@ var (
 			Computed:            true,
 			Default:             defaults.Int64(int64default.StaticInt64(0)),
 		},
-		"scenario_id": schema.StringAttribute{
-			MarkdownDescription: "The file's ID of the scenario.",
+		"scenario": schema.StringAttribute{
+			MarkdownDescription: "The OCI reference to the scenario.",
 			Required:            true,
 		},
 		"timeout": schema.Int64Attribute{
