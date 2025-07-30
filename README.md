@@ -36,7 +36,7 @@ provider "ctfdcm" {
 
 We recommend setting the environment variable `CTFD_API_KEY` to enable the provider to communicate with your CTFd instance.
 
-Then, you could use a `ctfdcm_challenge` resource to setup your CTFd challenge, with for instance the following configuration.
+Then, you could use a `ctfdcm_challenge_dynamiciac` resource to setup your CTFd challenge, with for instance the following configuration.
 ```hcl
 resource "ctfdcm_challenge_dynamiciac" "my_challenge" {
     name        = "My Challenge"
@@ -52,12 +52,7 @@ resource "ctfdcm_challenge_dynamiciac" "my_challenge" {
     shared          = true
     destroy_on_flag = true
     mana_cost       = 1
-    scenario_id     = ctfd_file.scenario.id
+    scenario        = "localhost:5000/some/scenario:v0.1.0"
     timeout         = 600
-}
-
-resource "ctfd_file" "scenario" {
-    name       = "scenario.zip"
-    contentb64 = filebase64(".../scenario.zip")
 }
 ```

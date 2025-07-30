@@ -15,3 +15,11 @@ updates:
       interval: "weekly"
     assignees:
       - "pandatix"
+
+  # Test scenario Go module
+  - package-ecosystem: "gomod"
+    directory: "provider/scenario"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "pandatix"
