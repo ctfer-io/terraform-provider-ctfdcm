@@ -47,6 +47,8 @@ variable "scenario" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Verify dynamic values have any value set in the state.
 					resource.TestCheckResourceAttrSet("ctfdcm_challenge_dynamiciac.http", "id"),
+					resource.TestCheckNoResourceAttr("ctfdcm_challenge_dynamiciac.http", "timeout"),
+					resource.TestCheckNoResourceAttr("ctfdcm_challenge_dynamiciac.http", "until"),
 				),
 			},
 			// ImportState testing

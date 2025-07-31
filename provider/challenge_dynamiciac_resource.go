@@ -144,8 +144,6 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 
 	// Save computed attributes in state
 	data.ID = types.StringValue(strconv.Itoa(res.ID))
-	data.Timeout = utils.ToTFInt64(res.Timeout)
-	data.Until = types.StringPointerValue(res.Until)
 
 	// Create tags
 	challTags := make([]types.String, 0, len(data.Tags))
@@ -235,7 +233,7 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 	for k, tv := range data.Additional.Elements() {
 		add[k] = tv.(types.String).ValueString()
 	}
-	res, err := ctfdcm.PatchChallenges(r.client, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
+	if _, err := ctfdcm.PatchChallenges(r.client, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
 		Category:       data.Category.ValueString(),
@@ -260,16 +258,13 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 		Additional:    add,
 		Min:           int(data.Min.ValueInt64()),
 		Max:           int(data.Max.ValueInt64()),
-	}, ctfd.WithContext(ctx))
-	if err != nil {
+	}, ctfd.WithContext(ctx)); err != nil {
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to update challenge, got error: %s", err),
 		)
 		return
 	}
-	data.Timeout = utils.ToTFInt64(res.Timeout)
-	data.Until = types.StringPointerValue(res.Until)
 
 	// Update its tags (drop them all, create new ones)
 	challTags, err := r.client.GetChallengeTags(utils.Atoi(data.ID.ValueString()), ctfd.WithContext(ctx))
@@ -401,7 +396,9 @@ func (chall *ChallengeDynamicIaCResourceModel) Read(ctx context.Context, client 
 	chall.ManaCost = types.Int64Value(int64(res.ManaCost))
 	chall.Scenario = types.StringValue(res.Scenario)
 	chall.Timeout = utils.ToTFInt64(res.Timeout)
-	chall.Until = types.StringPointerValue(res.Until)
+	if res.Until != nil && *res.Until != "" { // cannot use utils.ToTFString due to ctfer-io/ctfd-chall-manager#163
+		chall.Until = types.StringValue(*res.Until)
+	}
 	addMp := map[string]attr.Value{}
 	for k, v := range res.Additional {
 		addMp[k] = types.StringValue(v)
@@ -493,14 +490,10 @@ var (
 		"timeout": schema.Int64Attribute{
 			MarkdownDescription: "The timeout (in seconds) after which the instance will be janitored.",
 			Optional:            true,
-			Computed:            true,
-			Default:             nil,
 		},
 		"until": schema.StringAttribute{
 			MarkdownDescription: "The date until the instance could run before being janitored.",
 			Optional:            true,
-			Computed:            true,
-			Default:             nil,
 		},
 		"additional": schema.MapAttribute{
 			MarkdownDescription: "An optional key=value map (both strings) to pass to the scenario.",
