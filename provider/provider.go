@@ -38,5 +38,7 @@ func (p *CTFdCMProvider) Resources(ctx context.Context) []func() resource.Resour
 }
 
 func (p *CTFdCMProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewChallengeDynamicIaCDataSource,
+	}
 }
