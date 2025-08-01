@@ -33,9 +33,12 @@ func (p *CTFdCMProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 func (p *CTFdCMProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewChallengeDynamicIaCResource,
+		NewInstanceResource,
 	}
 }
 
 func (p *CTFdCMProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewChallengeDynamicIaCDataSource,
+	}
 }
