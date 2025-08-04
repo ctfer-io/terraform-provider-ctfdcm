@@ -8,7 +8,7 @@ require (
 	github.com/ctfer-io/go-ctfdcm v0.3.1
 	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.4.0
 	github.com/hashicorp/terraform-plugin-docs v0.22.0
-	github.com/hashicorp/terraform-plugin-framework v1.15.0
+	github.com/hashicorp/terraform-plugin-framework v1.15.1
 	github.com/hashicorp/terraform-plugin-go v0.28.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.13.2
