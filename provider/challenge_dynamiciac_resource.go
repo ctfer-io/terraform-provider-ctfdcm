@@ -25,9 +25,9 @@ import (
 )
 
 var (
-	_ resource.Resource = (*challengeDynamicIaCResource)(nil)
-	_ resource.Resource = (*challengeDynamicIaCResource)(nil)
-	_ resource.Resource = (*challengeDynamicIaCResource)(nil)
+	_ resource.Resource                = (*challengeDynamicIaCResource)(nil)
+	_ resource.ResourceWithConfigure   = (*challengeDynamicIaCResource)(nil)
+	_ resource.ResourceWithImportState = (*challengeDynamicIaCResource)(nil)
 )
 
 func NewChallengeDynamicIaCResource() resource.Resource {
