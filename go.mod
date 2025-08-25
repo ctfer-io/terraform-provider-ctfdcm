@@ -4,7 +4,7 @@ go 1.24.5
 
 require (
 	github.com/ctfer-io/chall-manager v0.5.0
-	github.com/ctfer-io/go-ctfd v0.13.3
+	github.com/ctfer-io/go-ctfd v0.14.0
 	github.com/ctfer-io/go-ctfdcm v0.3.1
 	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.4.0
 	github.com/hashicorp/terraform-plugin-docs v0.22.0
