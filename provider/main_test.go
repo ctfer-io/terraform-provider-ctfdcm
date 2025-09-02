@@ -34,5 +34,5 @@ func TestMain(m *testing.M) {
 
 func pushScenario() error {
 	ctx := context.Background()
-	return scenario.EncodeOCI(ctx, ref, "./scenario", true, nil, nil)
+	return scenario.EncodeOCI(ctx, ref, "./scenario", true, "", "")
 }
