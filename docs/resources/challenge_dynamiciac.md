@@ -67,6 +67,7 @@ resource "ctfd_flag" "http_flag" {
 - `connection_info` (String) Connection Information to connect to the challenge instance, useful for pwn, web and infrastructure pentests.
 - `destroy_on_flag` (Boolean) Whether to destroy the instance once flagged.
 - `function` (String) Decay function to define how the challenge value evolve through solves, either linear or logarithmic.
+- `logic` (String) The flag validation logic.
 - `mana_cost` (Number) The cost (in mana) of the challenge once an instance is deployed.
 - `max` (Number) The number of instances after which not to pool anymore.
 - `max_attempts` (Number) Maximum amount of attempts before being unable to flag the challenge.
