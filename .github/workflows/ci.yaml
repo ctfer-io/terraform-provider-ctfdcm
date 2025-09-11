@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     services:
       ctfd:
-        image: ctferio/ctfd:3.7.7-0.4.0@sha256:93496029c87ae1834b9bc8c45d728afe469432e109871dedff0b4c61d6b1422c
+        image: ctferio/ctfd:3.8.0-0.6.2@sha256:4bbd3994a732ddee96fee78283081777be02d8d4d3de8ab9dc6d6e71c300ce0c
         ports:
           - 8000:8000
         env:
-          PLUGIN_SETTINGS_CM_API_URL: http://chall-manager:8080/api/v1
+          PLUGIN_SETTINGS_CM_API_URL: http://chall-manager:8080
           PLUGIN_SETTINGS_CM_MANA_TOTAL: 10
 
       chall-manager: 
-        image: ctferio/chall-manager:v0.5.0@sha256:a197c53b5b64b91ec4397d90c81e3a43808c1349ef5eec38bb611a074d9d11a2
+        image: ctferio/chall-manager:v0.5.3@sha256:a288f140ea3f5cc3d6f225a3439554ff7b888d2ef304c437852bce79e9ac0337
         env:
           OCI_INSECURE: true
         ports:
