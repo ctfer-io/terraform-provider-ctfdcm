@@ -1,9 +1,9 @@
 module github.com/ctfer-io/terraform-provider-ctfdcm
 
-go 1.24.5
+go 1.25.4
 
 require (
-	github.com/ctfer-io/chall-manager v0.6.0
+	github.com/ctfer-io/chall-manager v0.6.1
 	github.com/ctfer-io/go-ctfd v0.15.1
 	github.com/ctfer-io/go-ctfdcm v0.4.2
 	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.6.0
@@ -124,7 +124,7 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.17.0 // indirect
-	github.com/pulumi/pulumi/sdk/v3 v3.202.0 // indirect
+	github.com/pulumi/pulumi/sdk/v3 v3.208.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
@@ -148,9 +148,9 @@ require (
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	go.abhg.dev/goldmark/frontmatter v0.2.0 // indirect
-	go.etcd.io/etcd/api/v3 v3.6.5 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.6.5 // indirect
-	go.etcd.io/etcd/client/v3 v3.6.5 // indirect
+	go.etcd.io/etcd/api/v3 v3.6.6 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.6.6 // indirect
+	go.etcd.io/etcd/client/v3 v3.6.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otelzap v0.13.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0 // indirect
