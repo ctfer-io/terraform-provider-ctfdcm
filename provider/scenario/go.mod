@@ -2,7 +2,7 @@ module github.com/ctfer-io/terraform-provider-ctfdcm/provider/scenario
 
 go 1.24.5
 
-require github.com/pulumi/pulumi/sdk/v3 v3.217.0
+require github.com/pulumi/pulumi/sdk/v3 v3.218.0
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
