@@ -67,8 +67,8 @@ github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSV
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/ctfer-io/chall-manager v0.6.0 h1:E2td428vWlPEuiSpFRXjXHdRrxOALd4VCwr+puJbG1Y=
 github.com/ctfer-io/chall-manager v0.6.0/go.mod h1:CJntqMkflOoQIKf/1OouN5jEqlcDtkyFuRRv9QD4YoE=
-github.com/ctfer-io/go-ctfd v0.15.1 h1:QdFQTGGZQpM8QmYq2Vp8n/Ja0am42QLJpn6U0JOsKDk=
-github.com/ctfer-io/go-ctfd v0.15.1/go.mod h1:cUAbm6dv5OhjR3E3/QaJBGTJ/GJ7vsXdL92SmyN/aQo=
+github.com/ctfer-io/go-ctfd v0.16.0 h1:BvcQwjG3hRcqmIBqzZ2OapG3w4cKBBh2TrAYIuWjK00=
+github.com/ctfer-io/go-ctfd v0.16.0/go.mod h1:A8Mgqm85JtaTEVX8a0ZvHefcL6Nq2Ip2neftdfkgu18=
 github.com/ctfer-io/go-ctfdcm v0.4.2 h1:F4/Wg/OPRcZx0pqnYX0waAjJSq2o7L5CQSYF7mgZk/A=
 github.com/ctfer-io/go-ctfdcm v0.4.2/go.mod h1:jU8wRVFtseyhqsHF3+jd/M0ZAqTpvUAjvf/LhPwRhHo=
 github.com/ctfer-io/terraform-provider-ctfd/v2 v2.6.1 h1:bLv7y1siMevPsqq8Edvzj5WT74W8M/hfeptynYfi4yc=
