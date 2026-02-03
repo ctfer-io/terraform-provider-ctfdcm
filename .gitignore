@@ -1,5 +1,7 @@
 # examples
 *.tfstate*
+*.lock.hcl
+.terraform
 
 # ci files
 cov.out

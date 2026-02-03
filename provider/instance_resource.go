@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	ctfd "github.com/ctfer-io/go-ctfd/api"
 	ctfdcm "github.com/ctfer-io/go-ctfdcm/api"
 )
 
@@ -24,7 +23,7 @@ func NewInstanceResource() resource.Resource {
 }
 
 type instanceResource struct {
-	client *ctfd.Client
+	client *Client
 }
 
 type InstanceResourceModel struct {
@@ -64,11 +63,11 @@ func (r *instanceResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	client, ok := req.ProviderData.(*ctfd.Client)
+	client, ok := req.ProviderData.(*Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *github.com/ctfer-io/go-ctfd/api.Client, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", req.ProviderData),
+			fmt.Sprintf("Expected %T, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", (*Client)(nil), req.ProviderData),
 		)
 		return
 	}
@@ -77,16 +76,19 @@ func (r *instanceResource) Configure(ctx context.Context, req resource.Configure
 }
 
 func (r *instanceResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	ctx, span := StartTFSpan(ctx, r)
+	defer span.End()
+
 	var data InstanceResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if _, err := ctfdcm.PostAdminInstance(r.client, &ctfdcm.PostAdminInstanceParams{
+	if _, err := r.client.PostAdminInstance(ctx, &ctfdcm.PostAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
-	}, ctfd.WithContext(ctx)); err != nil {
+	}); err != nil {
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to create instance, got error: %s", err),
@@ -101,16 +103,19 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 }
 
 func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	ctx, span := StartTFSpan(ctx, r)
+	defer span.End()
+
 	var data InstanceResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if _, err := ctfdcm.GetAdminInstance(r.client, &ctfdcm.GetAdminInstanceParams{
+	if _, err := r.client.GetAdminInstance(ctx, &ctfdcm.GetAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
-	}, ctfd.WithContext(ctx)); err != nil {
+	}); err != nil {
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read instance, got error: %s", err),
@@ -126,19 +131,33 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 func (r *instanceResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// It should not happen
+
+	ctx, span := StartTFSpan(ctx, r)
+	defer span.End()
+
+	var data InstanceResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.AddError("Provider Error", "CTFd-Chall-Manager does not permit update of instance-related information thus this provider cannot do so. This operation should not have been possible.")
 }
 
 func (r *instanceResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	ctx, span := StartTFSpan(ctx, r)
+	defer span.End()
+
 	var data InstanceResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if _, err := ctfdcm.DeleteAdminInstance(r.client, &ctfdcm.DeleteAdminInstanceParams{
+	if _, err := r.client.DeleteAdminInstance(ctx, &ctfdcm.DeleteAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
-	}, ctfd.WithContext(ctx)); err != nil {
+	}); err != nil {
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to delete instance, got error: %s", err),

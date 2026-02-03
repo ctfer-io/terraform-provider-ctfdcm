@@ -1,0 +1,10 @@
+appearance:
+  name: 'TFP-CTFdCM'
+  description: 'Terraform Provider CTFd-CM.'
+
+admin:
+  name: ctfer
+  email: ctfer@ctfer.io
+  password: ctfer
+
+mode: 'teams'
