@@ -22,7 +22,7 @@ func NewChallengeDynamicIaCDataSource() datasource.DataSource {
 }
 
 type challengeDynamicIaCDataSource struct {
-	client *api.Client
+	client *Client
 }
 
 type challengesDynamicDataSourceModel struct {
@@ -30,11 +30,11 @@ type challengesDynamicDataSourceModel struct {
 	Challenges []ChallengeDynamicIaCResourceModel `tfsdk:"challenges"`
 }
 
-func (ch *challengeDynamicIaCDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (data *challengeDynamicIaCDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_challenges_dynamiciac"
 }
 
-func (ch *challengeDynamicIaCDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (data *challengeDynamicIaCDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -165,29 +165,33 @@ func (ch *challengeDynamicIaCDataSource) Schema(ctx context.Context, req datasou
 	}
 }
 
-func (ch *challengeDynamicIaCDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (data *challengeDynamicIaCDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
 
-	client, ok := req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected *github.com/ctfer-io/go-ctfd/api.Client, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", req.ProviderData),
+			fmt.Sprintf("Expected %T, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", (*Client)(nil), req.ProviderData),
 		)
 		return
 	}
 
-	ch.client = client
+	data.client = client
 }
 
-func (ch *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (data *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	ctx, span := StartTFSpan(ctx, data)
+	defer span.End()
+
 	var state challengesDynamicDataSourceModel
 
-	challs, err := ch.client.GetChallenges(&api.GetChallengesParams{
+	// Get a temporary view of the corresponding challenges, for filtering purposes
+	challs, err := data.client.GetChallenges(ctx, &api.GetChallengesParams{
 		Type: utils.Ptr("dynamic_iac"),
-	}, api.WithContext(ctx))
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read CTFd Challenges",
@@ -196,11 +200,12 @@ func (ch *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasourc
 		return
 	}
 
+	// Then get their actual data
 	state.Challenges = make([]ChallengeDynamicIaCResourceModel, 0, len(challs))
 	for _, c := range challs {
 		chall := ChallengeDynamicIaCResourceModel{}
 		chall.ID = types.StringValue(strconv.Itoa(c.ID))
-		chall.Read(ctx, ch.client, resp.Diagnostics)
+		chall.Read(ctx, data.client, resp.Diagnostics)
 		if resp.Diagnostics.HasError() {
 			return
 		}
