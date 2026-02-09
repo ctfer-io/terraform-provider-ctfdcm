@@ -76,7 +76,7 @@ jobs:
           echo "ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $name)" >> "$GITHUB_OUTPUT"
 
       - name: Setup CTFd
-        uses: ctfer-io/ctfd-setup@c3108d5d78162e243f7aad777053c5b6bf33a65e # v1.7.3
+        uses: ctfer-io/ctfd-setup@1a67a88e827ce21ecb2b638b6cd8947cb0e8dd49 # v1.8.0
         with:
           url: 'http://ctfd:8000'
           appearance_name: TFP-CTFd
