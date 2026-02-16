@@ -6,7 +6,7 @@ require (
 	github.com/ctfer-io/chall-manager v0.6.2
 	github.com/ctfer-io/go-ctfd v0.16.0
 	github.com/ctfer-io/go-ctfdcm v0.4.2
-	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.7.0
+	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.7.5
 	github.com/hashicorp/terraform-plugin-docs v0.24.0
 	github.com/hashicorp/terraform-plugin-framework v1.17.0
 	github.com/hashicorp/terraform-plugin-go v0.29.0
@@ -34,6 +34,7 @@ require (
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
@@ -111,6 +112,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
@@ -120,6 +122,11 @@ require (
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/posener/complete v1.2.3 // indirect
+	github.com/prometheus/client_golang v1.23.2 // indirect
+	github.com/prometheus/client_model v0.6.2 // indirect
+	github.com/prometheus/common v0.67.5 // indirect
+	github.com/prometheus/otlptranslator v1.0.0 // indirect
+	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.17.0 // indirect
 	github.com/pulumi/pulumi/sdk/v3 v3.217.0 // indirect
@@ -147,8 +154,22 @@ require (
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	go.abhg.dev/goldmark/frontmatter v0.2.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.opentelemetry.io/contrib/bridges/prometheus v0.65.0 // indirect
+	go.opentelemetry.io/contrib/exporters/autoexport v0.65.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.16.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.16.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.40.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.40.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.40.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.40.0 // indirect
+	go.opentelemetry.io/otel/exporters/prometheus v0.62.0 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.16.0 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.40.0 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.40.0 // indirect
+	go.opentelemetry.io/otel/log v0.16.0 // indirect
 	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/sdk/log v0.16.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
