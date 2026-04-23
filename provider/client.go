@@ -11,7 +11,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ctfer-io/go-ctfd/api"
 	ctfd "github.com/ctfer-io/go-ctfd/api"
 	ctfdcm "github.com/ctfer-io/go-ctfdcm/api"
 	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
@@ -19,11 +18,11 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-var apiTransport = api.WithTransport(otelhttp.NewTransport(http.DefaultTransport))
+var apiTransport = ctfd.WithTransport(otelhttp.NewTransport(http.DefaultTransport))
 
-func apiOptions(ctx context.Context) []api.Option {
-	return []api.Option{
-		api.WithContext(ctx),
+func apiOptions(ctx context.Context) []ctfd.Option {
+	return []ctfd.Option{
+		ctfd.WithContext(ctx),
 		apiTransport,
 	}
 }
