@@ -11,6 +11,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/ctfer-io/go-ctfd/api"
 	ctfd "github.com/ctfer-io/go-ctfd/api"
 	ctfdcm "github.com/ctfer-io/go-ctfdcm/api"
 	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
@@ -18,20 +19,20 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-var apiTransport = ctfd.WithTransport(otelhttp.NewTransport(http.DefaultTransport))
+var apiTransport = api.WithTransport(otelhttp.NewTransport(http.DefaultTransport))
 
-func options(ctx context.Context) []ctfd.Option {
-	return []ctfd.Option{
-		ctfd.WithContext(ctx),
+func apiOptions(ctx context.Context) []api.Option {
+	return []api.Option{
+		api.WithContext(ctx),
 		apiTransport,
 	}
 }
 
-func GetNonceAndSession(ctx context.Context, url string) (nonce, session string, err error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func GetNonceAndSession(ctx context.Context, url string, opts ...Option) (nonce, session string, err error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfd.GetNonceAndSession(url, options(ctx)...)
+	return ctfd.GetNonceAndSession(url, apiOptions(ctx)...)
 }
 
 type Client struct {
@@ -44,122 +45,122 @@ func NewClient(url, nonce, session, apiKey string) *Client {
 	}
 }
 
-func (cli *Client) Login(ctx context.Context, params *ctfd.LoginParams) error {
-	ctx, span := StartAPISpan(ctx)
+func (cli *Client) Login(ctx context.Context, params *ctfd.LoginParams, opts ...Option) error {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.Login(params, options(ctx)...)
+	return cli.sub.Login(params, apiOptions(ctx)...)
 }
 
 // region challenges
 
-func (cli *Client) GetChallenges(ctx context.Context, params *ctfd.GetChallengesParams) ([]*ctfd.Challenge, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetChallenges(ctx context.Context, params *ctfd.GetChallengesParams, opts ...Option) ([]*ctfd.Challenge, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.GetChallenges(params, options(ctx)...)
+	return cli.sub.GetChallenges(params, apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallenge(ctx context.Context, id string) (*ctfdcm.Challenge, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetChallenge(ctx context.Context, id string, opts ...Option) (*ctfdcm.Challenge, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.GetChallenge(cli.sub, id, options(ctx)...)
+	return ctfdcm.GetChallenge(cli.sub, id, apiOptions(ctx)...)
 }
 
-func (cli *Client) PostChallenges(ctx context.Context, params *ctfdcm.PostChallengesParams) (*ctfdcm.Challenge, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) PostChallenges(ctx context.Context, params *ctfdcm.PostChallengesParams, opts ...Option) (*ctfdcm.Challenge, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.PostChallenges(cli.sub, params, options(ctx)...)
+	return ctfdcm.PostChallenges(cli.sub, params, apiOptions(ctx)...)
 }
 
-func (cli *Client) PatchChallenges(ctx context.Context, id string, params *ctfdcm.PatchChallengeParams) (*ctfdcm.Challenge, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) PatchChallenges(ctx context.Context, id string, params *ctfdcm.PatchChallengeParams, opts ...Option) (*ctfdcm.Challenge, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.PatchChallenges(cli.sub, id, params, options(ctx)...)
+	return ctfdcm.PatchChallenges(cli.sub, id, params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteChallenge(ctx context.Context, id string) error {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) DeleteChallenge(ctx context.Context, id string, opts ...Option) error {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.DeleteChallenge(utils.Atoi(id), options(ctx)...)
+	return cli.sub.DeleteChallenge(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeTags(ctx context.Context, id string) ([]*ctfd.Tag, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetChallengeTags(ctx context.Context, id string, opts ...Option) ([]*ctfd.Tag, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.GetChallengeTags(utils.Atoi(id), options(ctx)...)
+	return cli.sub.GetChallengeTags(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeTopics(ctx context.Context, id string) ([]*ctfd.Topic, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetChallengeTopics(ctx context.Context, id string, opts ...Option) ([]*ctfd.Topic, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.GetChallengeTopics(utils.Atoi(id), options(ctx)...)
+	return cli.sub.GetChallengeTopics(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeRequirements(ctx context.Context, id string) (*ctfd.Requirements, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetChallengeRequirements(ctx context.Context, id string, opts ...Option) (*ctfd.Requirements, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.GetChallengeRequirements(utils.Atoi(id), options(ctx)...)
+	return cli.sub.GetChallengeRequirements(utils.Atoi(id), apiOptions(ctx)...)
 }
 
 // region instances
 
-func (cli *Client) GetAdminInstance(ctx context.Context, params *ctfdcm.GetAdminInstanceParams) (*ctfdcm.Instance, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) GetAdminInstance(ctx context.Context, params *ctfdcm.GetAdminInstanceParams, opts ...Option) (*ctfdcm.Instance, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.GetAdminInstance(cli.sub, params, options(ctx)...)
+	return ctfdcm.GetAdminInstance(cli.sub, params, apiOptions(ctx)...)
 }
 
-func (cli *Client) PostAdminInstance(ctx context.Context, params *ctfdcm.PostAdminInstanceParams) (*ctfdcm.Instance, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) PostAdminInstance(ctx context.Context, params *ctfdcm.PostAdminInstanceParams, opts ...Option) (*ctfdcm.Instance, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.PostAdminInstance(cli.sub, params, options(ctx)...)
+	return ctfdcm.PostAdminInstance(cli.sub, params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteAdminInstance(ctx context.Context, params *ctfdcm.DeleteAdminInstanceParams) (*ctfdcm.Instance, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) DeleteAdminInstance(ctx context.Context, params *ctfdcm.DeleteAdminInstanceParams, opts ...Option) (*ctfdcm.Instance, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return ctfdcm.DeleteAdminInstance(cli.sub, params, options(ctx)...)
+	return ctfdcm.DeleteAdminInstance(cli.sub, params, apiOptions(ctx)...)
 }
 
 // region tags
 
-func (cli *Client) PostTags(ctx context.Context, params *ctfd.PostTagsParams) (*ctfd.Tag, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) PostTags(ctx context.Context, params *ctfd.PostTagsParams, opts ...Option) (*ctfd.Tag, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.PostTags(params, options(ctx)...)
+	return cli.sub.PostTags(params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteTag(ctx context.Context, id string) error {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) DeleteTag(ctx context.Context, id string, opts ...Option) error {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.DeleteTag(id, options(ctx)...)
+	return cli.sub.DeleteTag(id, apiOptions(ctx)...)
 }
 
 // region topics
 
-func (cli *Client) PostTopics(ctx context.Context, params *ctfd.PostTopicsParams) (*ctfd.Topic, error) {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) PostTopics(ctx context.Context, params *ctfd.PostTopicsParams, opts ...Option) (*ctfd.Topic, error) {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.PostTopics(params, options(ctx)...)
+	return cli.sub.PostTopics(params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteTopic(ctx context.Context, params *ctfd.DeleteTopicArgs) error {
-	ctx, span := tfctfd.StartAPISpan(ctx)
+func (cli *Client) DeleteTopic(ctx context.Context, params *ctfd.DeleteTopicArgs, opts ...Option) error {
+	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
-	return cli.sub.DeleteTopic(params, options(ctx)...)
+	return cli.sub.DeleteTopic(params, apiOptions(ctx)...)
 }

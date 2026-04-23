@@ -8,7 +8,9 @@ import (
 	"testing"
 
 	"github.com/ctfer-io/chall-manager/pkg/scenario"
+	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
 	"github.com/ctfer-io/terraform-provider-ctfdcm/provider"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
 var (
@@ -21,15 +23,18 @@ func TestMain(m *testing.M) {
 	ctx := context.Background()
 
 	// Prepare OTel tracing
-	shutdown, err := provider.SetupOtelSDK(ctx, "test")
+	out, err := provider.SetupOTelSDK(ctx, "test")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer func() {
-		if err := shutdown(ctx); err != nil {
+		if err := out.Shutdown(ctx); err != nil {
 			log.Printf("Error shutting down tracer provider: %v", err)
 		}
 	}()
+
+	testAccProtoV6ProviderFactories["ctfd"] = providerserver.NewProtocol6WithError(tfctfd.New("test", out.TracerProvider)())
+	testAccProtoV6ProviderFactories["ctfdcm"] = providerserver.NewProtocol6WithError(provider.New("test", out.TracerProvider)())
 
 	// Build and push test scenario
 	r, ok := os.LookupEnv("REGISTRY")
@@ -41,7 +46,7 @@ func TestMain(m *testing.M) {
 	ref = fmt.Sprintf("%s/%s", REGISTRY, ref)
 
 	if err := func() error {
-		ctx, span := provider.Tracer.Start(ctx, "push-scenario")
+		ctx, span := out.TracerProvider.Tracer("terraform-provider-ctfdcm").Start(ctx, "push-scenario")
 		defer span.End()
 
 		return scenario.EncodeOCI(ctx, ref, "./scenario", true, "", "")

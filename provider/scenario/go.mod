@@ -1,6 +1,6 @@
 module github.com/ctfer-io/terraform-provider-ctfdcm/provider/scenario
 
-go 1.25.4
+go 1.25.8
 
 require github.com/pulumi/pulumi/sdk/v3 v3.224.0
 
