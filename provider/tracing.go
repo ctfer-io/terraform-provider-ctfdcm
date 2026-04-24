@@ -2,61 +2,57 @@ package provider
 
 import (
 	"context"
-	"fmt"
-	"runtime"
-	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	tpfresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"go.opentelemetry.io/contrib/exporters/autoexport"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.39.0"
 	"go.opentelemetry.io/otel/trace"
-	tracenoop "go.opentelemetry.io/otel/trace/noop"
+	"go.uber.org/multierr"
 )
 
 const (
 	serviceName = "terraform-provider-ctfdcm"
 )
 
-var (
-	tracerProvider *sdktrace.TracerProvider
-
-	Tracer trace.Tracer = tracenoop.NewTracerProvider().Tracer(serviceName)
-)
-
-func newPropagator() propagation.TextMapPropagator {
-	return propagation.NewCompositeTextMapPropagator(
-		propagation.TraceContext{},
-		propagation.Baggage{},
-	)
+type OTelSetup struct {
+	Shutdown       func(context.Context) error
+	TracerProvider trace.TracerProvider
 }
 
-func setupTraceProvider(ctx context.Context, r *resource.Resource) error {
-	traceExporter, err := otlptracegrpc.New(ctx)
-	if err != nil {
+func SetupOTelSDK(ctx context.Context, version string) (out OTelSetup, err error) {
+	var shutdownFuncs []func(context.Context) error
+
+	// shutdown calls cleanup functions registered via shutdownFuncs.
+	// The errors from the calls are joined.
+	// Each registered cleanup will be invoked once.
+
+	out.Shutdown = func(ctx context.Context) error {
+		var err error
+		for _, fn := range shutdownFuncs {
+			err = multierr.Append(err, fn(ctx))
+		}
+		shutdownFuncs = nil
 		return err
 	}
 
-	tracerProvider = sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(traceExporter),
-		sdktrace.WithResource(r),
-	)
-	Tracer = tracerProvider.Tracer(serviceName)
-	return nil
-}
+	// handleErr calls shutdown for cleanup and makes sure that all errors are returned
+	handleErr := func(inErr error) {
+		err = multierr.Append(inErr, out.Shutdown(ctx))
+	}
 
-func SetupOtelSDK(ctx context.Context, version string) (shutdown func(context.Context) error, err error) {
-	// Set up propagator.
-	prop := newPropagator()
+	// Set up propagator
+	prop := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
 	otel.SetTextMapPropagator(prop)
 
-	// Ensure default SDK resources and the required service name are set.
+	// Ensure default SDK resources and the required service name are set
 	r, err := resource.Merge(
-		resource.Default(),
+		resource.Environment(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(serviceName),
@@ -64,64 +60,23 @@ func SetupOtelSDK(ctx context.Context, version string) (shutdown func(context.Co
 		),
 	)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	// Set up trace provider.
-	if nerr := setupTraceProvider(ctx, r); nerr != nil {
-		return nil, err
+	// Then create the span exporter
+	exp, nerr := autoexport.NewSpanExporter(ctx)
+	if err != nil {
+		handleErr(nerr)
+		return
 	}
-	otel.SetTracerProvider(tracerProvider)
+	shutdownFuncs = append(shutdownFuncs, exp.Shutdown)
 
-	return tracerProvider.Shutdown, nil
-}
-
-func StartTFSpan(
-	ctx context.Context,
-	obj any,
-) (context.Context, trace.Span) {
-	kind, typeName := "unknown", "unknown"
-	if data, ok := obj.(datasource.DataSource); ok {
-		kind = "data"
-
-		resp := &datasource.MetadataResponse{}
-		data.Metadata(ctx, datasource.MetadataRequest{}, resp)
-		typeName = providerTypeName + resp.TypeName
-	}
-	if r, ok := obj.(tpfresource.Resource); ok {
-		kind = "resource"
-
-		resp := &tpfresource.MetadataResponse{}
-		r.Metadata(ctx, tpfresource.MetadataRequest{}, resp)
-		typeName = providerTypeName + resp.TypeName
-	}
-
-	method := getCallerFunctionName()
-
-	return Tracer.Start(
-		ctx,
-		fmt.Sprintf("%s/%s/%s", kind, typeName, method),
-		trace.WithSpanKind(trace.SpanKindInternal),
+	out.TracerProvider = sdktrace.NewTracerProvider(
+		// We need to have the burden of a simple span processor as the process might be short-lived
+		// because a batch processor can not give enough time to export data...
+		sdktrace.WithSpanProcessor(sdktrace.NewSimpleSpanProcessor(exp)),
+		sdktrace.WithResource(r),
 	)
-}
 
-func StartAPISpan(ctx context.Context) (context.Context, trace.Span) {
-	method := getCallerFunctionName()
-
-	return Tracer.Start(
-		ctx,
-		fmt.Sprintf("api/%s", method),
-	)
-}
-
-func getCallerFunctionName() string {
-	pc, _, _, _ := runtime.Caller(2)
-	fn := runtime.FuncForPC(pc)
-	method := "unknown"
-	if fn != nil {
-		if idx := strings.LastIndex(fn.Name(), "."); idx != -1 {
-			method = fn.Name()[idx+1:]
-		}
-	}
-	return method
+	return
 }

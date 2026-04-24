@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/ctfer-io/go-ctfd/api"
+	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
 	"github.com/ctfer-io/terraform-provider-ctfd/v2/provider/utils"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -22,7 +23,7 @@ func NewChallengeDynamicIaCDataSource() datasource.DataSource {
 }
 
 type challengeDynamicIaCDataSource struct {
-	client *Client
+	fm *Framework
 }
 
 type challengesDynamicDataSourceModel struct {
@@ -170,28 +171,28 @@ func (data *challengeDynamicIaCDataSource) Configure(ctx context.Context, req da
 		return
 	}
 
-	client, ok := req.ProviderData.(*Client)
+	fm, ok := req.ProviderData.(*Framework)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected %T, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", (*Client)(nil), req.ProviderData),
+			fmt.Sprintf("Expected %T, got: %T. Please open an issue at https://github.com/ctfer-io/terraform-provider-ctfdcm", (*Framework)(nil), req.ProviderData),
 		)
 		return
 	}
 
-	data.client = client
+	data.fm = fm
 }
 
 func (data *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	ctx, span := StartTFSpan(ctx, data)
+	ctx, span := tfctfd.StartTFSpan(ctx, data.fm.Tp.Tracer(serviceName), data)
 	defer span.End()
 
 	var state challengesDynamicDataSourceModel
 
 	// Get a temporary view of the corresponding challenges, for filtering purposes
-	challs, err := data.client.GetChallenges(ctx, &api.GetChallengesParams{
+	challs, err := data.fm.Client.GetChallenges(ctx, &api.GetChallengesParams{
 		Type: utils.Ptr("dynamic_iac"),
-	})
+	}, WithTracerProvider(data.fm.Tp))
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read CTFd Challenges",
@@ -205,7 +206,7 @@ func (data *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasou
 	for _, c := range challs {
 		chall := ChallengeDynamicIaCResourceModel{}
 		chall.ID = types.StringValue(strconv.Itoa(c.ID))
-		chall.Read(ctx, data.client, resp.Diagnostics)
+		chall.Read(ctx, data.fm.Client, resp.Diagnostics, WithTracerProvider(data.fm.Tp))
 		if resp.Diagnostics.HasError() {
 			return
 		}

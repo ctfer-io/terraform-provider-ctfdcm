@@ -37,7 +37,7 @@ services:
       - otel-demo
 
   ctfd:
-    image: ctferio/ctfd:3.8.1-0.9.0
+    image: ctferio/ctfd:3.8.4-0.9.3
     ports:
       - "8000:8000"
     environment:

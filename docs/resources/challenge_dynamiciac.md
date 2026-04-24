@@ -73,12 +73,13 @@ resource "ctfd_flag" "http_flag" {
 - `max_attempts` (Number) Maximum amount of attempts before being unable to flag the challenge.
 - `min` (Number) The minimum number of instances to set in the pool.
 - `next` (Number) Suggestion for the end-user as next challenge to work on.
+- `position` (Number) The challenge position as displayed to players.
 - `requirements` (Attributes) List of required challenges that needs to get flagged before this one being accessible. Useful for skill-trees-like strategy CTF. (see [below for nested schema](#nestedatt--requirements))
 - `shared` (Boolean) Whether the instance will be shared between all players.
 - `state` (String) State of the challenge, either hidden or visible.
-- `tags` (List of String) List of challenge tags that will be displayed to the end-user. You could use them to give some quick insights of what a challenge involves.
+- `tags` (Set of String) List of challenge tags that will be displayed to the end-user. You could use them to give some quick insights of what a challenge involves.
 - `timeout` (Number) The timeout (in seconds) after which the instance will be janitored.
-- `topics` (List of String) List of challenge topics that are displayed to the administrators for maintenance and planification.
+- `topics` (Set of String) List of challenge topics that are displayed to the administrators for maintenance and planification.
 - `until` (String) The date until the instance could run before being janitored.
 
 ### Read-Only
@@ -91,4 +92,4 @@ resource "ctfd_flag" "http_flag" {
 Optional:
 
 - `behavior` (String) Behavior if not unlocked, either hidden or anonymized.
-- `prerequisites` (List of String) List of the challenges ID.
+- `prerequisites` (Set of String) List of the challenges ID.

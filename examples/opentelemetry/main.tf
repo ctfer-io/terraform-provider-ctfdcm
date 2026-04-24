@@ -4,7 +4,7 @@ terraform {
       source = "ctfer-io/ctfd"
     }
     ctfdcm = {
-        source = "ctfer-io/ctfdcm"
+      source = "ctfer-io/ctfdcm"
     }
   }
 }
