@@ -86,7 +86,7 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	if _, err := r.fm.Client.PostAdminInstance(ctx, &ctfdcm.PostAdminInstanceParams{
+	if _, _, err := r.fm.Client.PostAdminInstance(ctx, &ctfdcm.PostAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
 	}, WithTracerProvider(r.fm.Tp)); err != nil {
@@ -113,7 +113,7 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	if _, err := r.fm.Client.GetAdminInstance(ctx, &ctfdcm.GetAdminInstanceParams{
+	if _, _, err := r.fm.Client.GetAdminInstance(ctx, &ctfdcm.GetAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
 	}, WithTracerProvider(r.fm.Tp)); err != nil {
@@ -155,7 +155,7 @@ func (r *instanceResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 
-	if _, err := r.fm.Client.DeleteAdminInstance(ctx, &ctfdcm.DeleteAdminInstanceParams{
+	if _, _, err := r.fm.Client.DeleteAdminInstance(ctx, &ctfdcm.DeleteAdminInstanceParams{
 		ChallengeID: data.ChallengeID.ValueString(),
 		SourceID:    data.SourceID.ValueString(),
 	}, WithTracerProvider(r.fm.Tp)); err != nil {

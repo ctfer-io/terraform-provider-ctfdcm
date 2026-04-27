@@ -190,7 +190,7 @@ func (data *challengeDynamicIaCDataSource) Read(ctx context.Context, req datasou
 	var state challengesDynamicDataSourceModel
 
 	// Get a temporary view of the corresponding challenges, for filtering purposes
-	challs, err := data.fm.Client.GetChallenges(ctx, &api.GetChallengesParams{
+	challs, _, err := data.fm.Client.GetChallenges(ctx, &api.GetChallengesParams{
 		Type: utils.Ptr("dynamic_iac"),
 	}, WithTracerProvider(data.fm.Tp))
 	if err != nil {
