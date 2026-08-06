@@ -74,6 +74,8 @@ github.com/ctfer-io/go-ctfd v0.18.0 h1:rcP1rrIR4DefLOVYd7zM5NNtfB2pHivFfj6odUIZO
 github.com/ctfer-io/go-ctfd v0.18.0/go.mod h1:A8Mgqm85JtaTEVX8a0ZvHefcL6Nq2Ip2neftdfkgu18=
 github.com/ctfer-io/go-ctfdcm v0.5.0 h1:eLU7N2snnQ7eYZmlBZrhhQ9m0AuNV1DbkFQ+u4MDk/0=
 github.com/ctfer-io/go-ctfdcm v0.5.0/go.mod h1:Sxhkx3iuUM0DH77i7le6GPbyZ70Y6HErFolRYXATgnw=
+github.com/ctfer-io/go-ctfdcm v0.6.0 h1:ONC+L3/CX10V7l40pkmh7sA7F9TVFzP11dwJe9MDOo0=
+github.com/ctfer-io/go-ctfdcm v0.6.0/go.mod h1:Gdiv09GK5ExNBrA4r69WXvZqYanmlamhECR7jxBDvPY=
 github.com/ctfer-io/terraform-provider-ctfd/v2 v2.8.1 h1:HWDOaXfA3gbupcjIxJ8obV9Z5QWtF6lsoLw2+603wHw=
 github.com/ctfer-io/terraform-provider-ctfd/v2 v2.8.1/go.mod h1:T2U0EhiteXgwJ9P13uegntkqp9Y8lUTouefOy0qsLMA=
 github.com/cyphar/filepath-securejoin v0.6.1 h1:5CeZ1jPXEiYt3+Z6zqprSAgSWiggmpVyciv8syjIpVE=

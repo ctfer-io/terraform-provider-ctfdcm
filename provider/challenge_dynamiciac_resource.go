@@ -108,7 +108,7 @@ func (r *challengeDynamicIaCResource) Create(ctx context.Context, req resource.C
 	for k, tv := range data.Additional.Elements() {
 		add[k] = tv.(types.String).ValueString()
 	}
-	res, err := r.fm.Client.PostChallenges(ctx, &ctfdcm.PostChallengesParams{
+	res, _, err := r.fm.Client.PostChallenges(ctx, &ctfdcm.PostChallengesParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
 		Category:       data.Category.ValueString(),
@@ -244,7 +244,7 @@ func (r *challengeDynamicIaCResource) Update(ctx context.Context, req resource.U
 	for k, tv := range data.Additional.Elements() {
 		add[k] = tv.(types.String).ValueString()
 	}
-	if _, err := r.fm.Client.PatchChallenges(ctx, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
+	if _, _, err := r.fm.Client.PatchChallenges(ctx, data.ID.ValueString(), &ctfdcm.PatchChallengeParams{
 		// CTFd
 		Name:           data.Name.ValueString(),
 		Category:       data.Category.ValueString(),
@@ -388,7 +388,7 @@ func (r *challengeDynamicIaCResource) ImportState(ctx context.Context, req resou
 }
 
 func (chall *ChallengeDynamicIaCResourceModel) Read(ctx context.Context, client *Client, diags diag.Diagnostics, opts ...Option) {
-	res, err := client.GetChallenge(ctx, chall.ID.ValueString(), opts...)
+	res, _, err := client.GetChallenge(ctx, chall.ID.ValueString(), opts...)
 	if err != nil {
 		diags.AddError("Client Error", fmt.Sprintf("Unable to read challenge %s, got error: %s", chall.ID.ValueString(), err))
 		return
