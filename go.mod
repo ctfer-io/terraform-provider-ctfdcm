@@ -3,7 +3,7 @@ module github.com/ctfer-io/terraform-provider-ctfdcm
 go 1.25.8
 
 require (
-	github.com/ctfer-io/chall-manager v0.6.5
+	github.com/ctfer-io/chall-manager v0.6.6
 	github.com/ctfer-io/go-ctfd v0.17.0
 	github.com/ctfer-io/go-ctfdcm v0.5.0
 	github.com/ctfer-io/terraform-provider-ctfd/v2 v2.8.0
