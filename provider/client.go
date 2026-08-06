@@ -11,6 +11,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/ctfer-io/go-ctfd/api"
 	ctfd "github.com/ctfer-io/go-ctfd/api"
 	ctfdcm "github.com/ctfer-io/go-ctfdcm/api"
 	tfctfd "github.com/ctfer-io/terraform-provider-ctfd/v2/provider"
@@ -53,7 +54,7 @@ func (cli *Client) Login(ctx context.Context, params *ctfd.LoginParams, opts ...
 
 // region challenges
 
-func (cli *Client) GetChallenges(ctx context.Context, params *ctfd.GetChallengesParams, opts ...Option) ([]*ctfd.Challenge, error) {
+func (cli *Client) GetChallenges(ctx context.Context, params *ctfd.GetChallengesParams, opts ...Option) ([]*ctfd.Challenge, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
@@ -81,28 +82,28 @@ func (cli *Client) PatchChallenges(ctx context.Context, id string, params *ctfdc
 	return ctfdcm.PatchChallenges(cli.sub, id, params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteChallenge(ctx context.Context, id string, opts ...Option) error {
+func (cli *Client) DeleteChallenge(ctx context.Context, id string, opts ...Option) (*api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
 	return cli.sub.DeleteChallenge(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeTags(ctx context.Context, id string, opts ...Option) ([]*ctfd.Tag, error) {
+func (cli *Client) GetChallengeTags(ctx context.Context, id string, opts ...Option) ([]*ctfd.Tag, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
 	return cli.sub.GetChallengeTags(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeTopics(ctx context.Context, id string, opts ...Option) ([]*ctfd.Topic, error) {
+func (cli *Client) GetChallengeTopics(ctx context.Context, id string, opts ...Option) ([]*ctfd.Topic, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
 	return cli.sub.GetChallengeTopics(utils.Atoi(id), apiOptions(ctx)...)
 }
 
-func (cli *Client) GetChallengeRequirements(ctx context.Context, id string, opts ...Option) (*ctfd.Requirements, error) {
+func (cli *Client) GetChallengeRequirements(ctx context.Context, id string, opts ...Option) (*ctfd.Requirements, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
@@ -134,14 +135,14 @@ func (cli *Client) DeleteAdminInstance(ctx context.Context, params *ctfdcm.Delet
 
 // region tags
 
-func (cli *Client) PostTags(ctx context.Context, params *ctfd.PostTagsParams, opts ...Option) (*ctfd.Tag, error) {
+func (cli *Client) PostTags(ctx context.Context, params *ctfd.PostTagsParams, opts ...Option) (*ctfd.Tag, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
 	return cli.sub.PostTags(params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteTag(ctx context.Context, id string, opts ...Option) error {
+func (cli *Client) DeleteTag(ctx context.Context, id string, opts ...Option) (*api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
@@ -150,14 +151,14 @@ func (cli *Client) DeleteTag(ctx context.Context, id string, opts ...Option) err
 
 // region topics
 
-func (cli *Client) PostTopics(ctx context.Context, params *ctfd.PostTopicsParams, opts ...Option) (*ctfd.Topic, error) {
+func (cli *Client) PostTopics(ctx context.Context, params *ctfd.PostTopicsParams, opts ...Option) (*ctfd.Topic, *api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
 	return cli.sub.PostTopics(params, apiOptions(ctx)...)
 }
 
-func (cli *Client) DeleteTopic(ctx context.Context, params *ctfd.DeleteTopicArgs, opts ...Option) error {
+func (cli *Client) DeleteTopic(ctx context.Context, params *ctfd.DeleteTopicArgs, opts ...Option) (*api.MetaResponse, error) {
 	ctx, span := tfctfd.StartAPISpan(ctx, getTracer(opts...))
 	defer span.End()
 
