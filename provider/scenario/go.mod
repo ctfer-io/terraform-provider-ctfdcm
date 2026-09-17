@@ -1,8 +1,8 @@
 module github.com/ctfer-io/terraform-provider-ctfdcm/provider/scenario
 
-go 1.26
+go 1.26.6
 
-require github.com/pulumi/pulumi/sdk/v3 v3.259.0
+require github.com/pulumi/pulumi/sdk/v3 v3.262.0
 
 require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
@@ -27,6 +27,7 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/deckarep/golang-set/v2 v2.5.0 // indirect
 	github.com/djherbis/times v1.5.0 // indirect
 	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -78,6 +79,7 @@ require (
 	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/cobra v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
